@@ -1,0 +1,16 @@
+Django at glance
+----------------
+Reporter.objects.get(full_name__startswith="John")
+<Reporter: John Smith>
+>>> Reporter.objects.get(full_name__contains="mith")
+>>> Article.objects.all()
+<QuerySet [<Article: Django is cool>]>
+
+# Article objects get API access to related Reporter objects.
+>>> r = a.reporter
+>>> r.full_name
+'John Smith'
+
+# And vice versa: Reporter objects get API access to Article objects.
+>>> r.article_set.all()
+<QuerySet [<Article: Django is cool>]>
