@@ -14,3 +14,11 @@ Reporter.objects.get(full_name__startswith="John")
 # And vice versa: Reporter objects get API access to Article objects.
 >>> r.article_set.all()
 <QuerySet [<Article: Django is cool>]>
+
+
+tutorials
+---------
+>>> from django.utils import timezone
+>>> current_year = timezone.now().year
+>>> Question.objects.get(pub_date__year=current_year)
+
