@@ -195,3 +195,8 @@ with transaction.atomic():
     order = Order.objects.create(product=product, quantity=1)
     # If an error occurs, the transaction will be rolled back
 
+                                                                  https://djangopackages.org/grids/g/ecommerce/
+                                                                 https://www.geeksforgeeks.org/e-commerce-website-using-django/
+                                                                 
+
+

@@ -23,3 +23,5 @@ urlpatterns = [
     path("polls/", include("polls.urls")),
     # path("core/", include("core.urls")),
 ]
+
+handler404 = "polls.views.not_found"
