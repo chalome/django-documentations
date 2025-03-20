@@ -21,4 +21,177 @@ tutorials
 >>> from django.utils import timezone
 >>> current_year = timezone.now().year
 >>> Question.objects.get(pub_date__year=current_year)
+====================================================
+mess with related_name and related_query_name
+mess with JSONField and ArrayField
+
+@property:
+----------
+It is a decorator
+.getter methods 
+.you don't acces it like a method
+.Read-Only Access: The @property method cannot be modified like a normal attribute.
+.Computed Properties: Useful for values derived from other fields without storing extra data.
+.Code Simplicity: No need to call it like a method (obj.method()), just use obj.attribute.
+@classmethod
+-------------
+The @classmethod decorator in Python is used to define a method that belongs to the class itself, 
+rather than an instance of the class. It allows the method to access and modify class-level 
+attributes instead of instance attributes.
+@classmethod
+    def get_class_attribute(cls):
+        return cls.class_attribute
+
+How It Works
+@classmethod makes get_class_attribute a class method.
+It takes cls (the class itself) as its first parameter instead of self (instance).
+It can access or modify class attributes.
+usage:
+print(MyClass.get_class_attribute())  # Output: "Hello, World!"
+
+@staticmethod
+-------------
+The @staticmethod decorator in Python defines a method that does not depend on instance (self) or class (cls) attributes. It behaves like a regular function but is inside a class for organizational purposes.
+A common use case for @staticmethod in Django is utility functions that do not need class or instance attributes.
+from django.db import models
+
+class Order(models.Model):
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+
+    @staticmethod
+    def format_currency(amount):
+        return f"${amount:,.2f}"  # Format as currency
+
+# Usage
+print(Order.format_currency(1500))  # Output: "$1,500.00"
+
+Feature	                @staticmethod	@classmethod	Instance Method
+Takes self?	        ❌ No	        ❌ No	        ✅ Yes
+Takes cls?	        ❌ No	        ✅ Yes	        ❌ No
+Can modify class?	❌ No	        ✅ Yes	        ❌ No
+Can modify instance?	❌ No	        ❌ No	        ✅ Yes
+
+@cached_property
+----------------
+The @cached_property decorator in Django is used to cache the result of a method as a property. This means the method is only executed once per instance, and subsequent accesses return the cached value instead of recalculating it.
+
+❌ back to this:  select_related,and prefect_related and annotate
+
+le 18/03/2025
+--------------
+back to related_name and related_query_names
+
+# Find all authors who have a book titled "Django Basics"
+Author.objects.filter(book__title="Django Basics")
+More readable filtering (book__title instead of book_set__title).
+
+emails = User.objects.filter(age__gte=18).values_list("email", flat=True).order_by("username")
+print(emails)
+🔹 Retrieves emails of users aged 18+, sorted alphabetically by username.
+products = Product.objects.all()  # Retrieves all products
+cheap_products = Product.objects.filter(price__lt=10)  # Products with price < 10
+
+Filter
+=====
+charfield and textfield
+1. Exact Match & Case Sensitivity
+ a=Article.objects.filter(reporter__full_name__exact='Izompansavye Chalome')
+ iexact → Case-insensitive exact match
+ a=Article.objects.filter(reporter__full_name__iexact='Izompansavye Chalome')
+2. Partial Match & Containment
+contains and icontains
+3.
+endswith and startswith
+4.Null & Empty Checks
+isnull=True
+
+a=Article.objects.annotate(full_name_length=Length("reporter__full_name")).filter(full_name_length__gt=10)
+a=Article.objects.annotate(full_name_length=Length("reporter__full_name")).filter(full_name_length__lt=10)
+lt:lower than   gt:greater than lte:lower than or equal to   gte
+Product.objects.filter(price__range=(50, 200))
+
+
+User.objects.exclude(username__icontains="admin")
+Product.objects.filter(price__modulo=(2, 0)) 
+
+select_related:
+==============
+products = Product.objects.select_related("owner").all()
+for product in products:
+    print(product.owner.username)  # Now uses a single query
+  ===>les noms de proprietaires
+prefetch_related:
+================
+users = CustomUser.objects.prefetch_related("products").all()
+for user in users:
+    print(user.products.all())  # Uses prefetched data, no extra queries
+=======>les produits
+To fetch owner and products:
+products = Product.objects.select_related("owner").prefetch_related("owner__products").all()
+for product in products:
+    print(product.owner.username, product.owner.products.all())  # Optimized!
+
+products = Product.objects.select_related("owner").prefetch_related("owner__products").annotate(owner_product_count=Cou
+         nt("owner__product")).distinct()
+==>select_related("owner"): Optimizes fetching the owner (avoids extra queries).
+prefetch_related("owner__products"): Prefetches all products of the owner.
+
+
+In [182]: users = CustomUser.objects.prefetch_related("products").annotate(quantity=Count("product")).all()
+     ...: for user in users:
+     ...:     product_names = [product.name for product in user.products.all()]
+     ...:     print(f"Owner::{user.username},his products are::{product_names},the total::{user.quantity}")
+
+
+
+In [194]: products = Product.objects.select_related("owner").annotate(total_products=Count("owner__product")).values_list("name",
+        ⋮ "owner__username","total_products").distinct()
+
+In [195]: for name, owner_username, total_products in products:
+     ...:     print(f"Product Name: {name}, Owner: {owner_username}, Total Products: {total_products}")
+
+Product.objects.order_by("owner__username", "-price")
+🔹 Orders first by owner__username, then by price in descending order.
+
+Product.objects.values("name", "price")
+[
+    {"name": "Phone", "price": 500},
+    {"name": "Laptop", "price": 1200}
+]
+
+Product.objects.values_list("name", "price")
+[
+    ("Phone", 500),
+    ("Laptop", 1200)
+]
+Product.objects.all()[:5]  # First 5 records
+Product.objects.all()[5:10] # Skip first 5, then return next 5
+from django.db.models import Case, When, IntegerField
+
+Product.objects.annotate(
+    discounted_price=Case(
+        When(price__gte=1000, then=0.9 * Sum("price")),  # Apply 10% discount
+        When(price__gte=500, then=0.95 * Sum("price")),  # Apply 5% discount
+        default=Sum("price"),  # No discount
+        output_field=IntegerField(),
+    )
+)
+
+
+bulk_create, bulk_update
+
+In [6]: products = [Product(name='juice',price=1000,owner=owner,quantity=5),Product(name='candy',price=1500,owner=owner,quantity=
+      ⋮ 10),Product(name='shoe',price=3000,owner=owner,quantity=15),Product(name='Trouser',price=2000,owner=owner,quantity=8)]
+
+In [7]: Product.objects.bulk_create(products)
+
+10. Database Transactions
+If you want to ensure atomicity of database operations (where all operations succeed or none at all), you can use transaction.atomic().
+from django.db import transaction
+
+with transaction.atomic():
+    # Perform multiple database operations here
+    product = Product.objects.create(name='Product A', price=100)
+    order = Order.objects.create(product=product, quantity=1)
+    # If an error occurs, the transaction will be rolled back
 

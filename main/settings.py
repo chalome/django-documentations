@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "post",
+    "core",
     "polls",
     "django_extensions"
 ]
@@ -128,11 +128,13 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # SHELL CONFIGURATION
 SHELL_PLUS = "ipython"
 SHELL_PLUS_AUTOIMPORT = True
-SHELL_PLUS_PRE_IMPORTS = [
-    ("django.shortcuts", "*"),
-    ("django.urls", "*"),
-    ("django.db.models", "*"),
-    ("polls.models", "*"),
-    ("post.models", "*"),
-]
-SHELL_PLUS_PRINT_SQL = True
+# SHELL_PLUS_PRE_IMPORTS = [
+#     ("django.shortcuts", "*"),
+#     ("django.urls", "*"),
+#     ("django.db.models", "*"),
+#     ("polls.models", "*"),
+#     # ("post.models", "*"),
+# ]
+# SHELL_PLUS_PRINT_SQL = True
+AUTH_USER_MODEL = 'core.CustomUser'
+
