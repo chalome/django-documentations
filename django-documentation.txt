@@ -200,3 +200,23 @@ with transaction.atomic():
                                                                  
 
 
+Testing
+======
+>>> from django.test.utils import setup_test_environment
+>>> setup_test_environment()
+
+                                                   HOW TO CREATE A PIP INSTALL
+                                                    =========================
+python -m pip install django-debug-toolbar
+1.First, create a parent directory for the package, outside of your Django project. Call this directory django-polls.
+2.Move the polls directory into django-polls directory, and rename it to django_polls.
+3.Edit django_polls/apps.py so that name refers to the new module name and add label to give a short name for the app:
+from django.apps import AppConfig
+
+
+class PollsConfig(AppConfig):
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "django_polls"
+    label = "polls"
+4.Create a file django-polls/README.rst with the following contents:
+

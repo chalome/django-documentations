@@ -19,7 +19,7 @@ class Article(models.Model):
         return self.headline
 
 class CustomUser(AbstractUser):
-    age = models.IntegerField()
+    age = models.IntegerField(blank=True,null=True)
     address = models.CharField(max_length=100,blank=True,null=True)
     phone = models.CharField(max_length=15,blank=True,null=True)
 
