@@ -220,3 +220,143 @@ class PollsConfig(AppConfig):
     label = "polls"
 4.Create a file django-polls/README.rst with the following contents:
 
+
+https://docs.djangoproject.com/en/5.1/topics/db/
+
+MODELS
+=====
+For choicees:
+In [9]: product.category
+Out[9]: 'OT'
+
+In [10]: product.get_category_display()
+Out[10]: 'Other'
+
+In [11]: 
+visit:  https://docs.djangoproject.com/en/5.1/ref/models/fields/#field-choices
+
+>>> ringo = Person.objects.create(name="Ringo Starr")
+>>> paul = Person.objects.create(name="Paul McCartney")
+>>> beatles = Group.objects.create(name="The Beatles")
+>>> m1 = Membership(
+...     person=ringo,
+...     group=beatles,
+...     date_joined=date(1962, 8, 16),
+...     invite_reason="Needed a new drummer.",
+... )
+>>> m1.save()
+>>> beatles.members.all()
+<QuerySet [<Person: Ringo Starr>]>
+>>> ringo.group_set.all()
+<QuerySet [<Group: The Beatles>]>
+>>> m2 = Membership.objects.create(
+...     person=paul,
+...     group=beatles,
+...     date_joined=date(1960, 8, 1),
+...     invite_reason="Wanted to form a band.",
+... )
+>>> beatles.members.all()
+
+You can also use add(), create(), or set() to create relationships, as long as you specify through_defaults for any required fields:
+
+>>> beatles.members.add(john, through_defaults={"date_joined": date(1960, 8, 1)})
+>>> beatles.members.create(
+...     name="George Harrison", through_defaults={"date_joined": date(1960, 8, 1)}
+... )
+>>> beatles.members.set(
+...     [john, paul, ringo, george], through_defaults={"date_joined": date(1960, 8, 1)}
+... )
+
+>>> beatles.members.remove(ringo)
+>>> beatles.members.all()
+
+to fetch memberships along with the associated person and group, you would domemberships = Membership.objects.select_related('person', 'group').all()
+
+Model metadata
+==============
+api/v1/dbs/wallets/?client=1086  ==>liste de wallets
+
+==============
+Making queries
+==============
+chaining filters:
+Entry.objects.filter(headline__startswith="What").exclude(
+...     pub_date__gte=datetime.date.today()
+... ).filter(pub_date__gte=datetime.date(2005, 1, 30))
+
+
+For example, this would actually execute the query in order to return a list of every second object of the first 10:
+
+>>> Entry.objects.all()[:10:2]
+
+{
+   "credit_account": "16-01",
+   "credit_account_holder":"PIERRE-CLAVER KOKO BANYWERHA",
+   "amount": 1000,
+   "reference":"jki9",
+   "description": "Depot",
+   "pin_code": "2023"
+}
+
+{ 
+   "debit_account": "69262642",
+   "debit_account_holder": "John Doe",
+   "amount": 3000,
+   "description": "Retrait",
+   "external_reference": "REF2023-09-25",
+   "pin_code": "2023"
+}
+deposit-agent:
+{
+   "credit_account": "434-01",
+   "credit_account_holder":"BARUTWANAYO JOEL",
+   "amount": 1000,
+   "external_reference":"jki9",
+   "description": "Deposit testing integration",
+   "pin_code": "4321"
+}with the 1381
+
+ { 
+   "debit_account": "71000002",
+   "debit_account_holder": "DON DELICE DUSHIME",
+   "amount": 3000,
+   "description": "Retrait test integrations",
+   "external_reference": "REF2023-09-25",
+   "pin_code": "4321"
+}
+with the 1086
+
+class Product(models.Model):
+    name = models.CharField(max_length=100)
+    category = models.CharField(max_length=50)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'category'], name='unique_product_per_category')
+        ]
+No two products can have the same name within the same category.
+
+class Meta:
+        constraints = [
+            models.CheckConstraint(check=models.Q(age__gte=18), name='age_above_18')
+        ]
+Ensures age is at least 18.
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['sku'],
+                name='unique_sku_when_active',
+                condition=models.Q(is_active=True)
+            )
+        ]
+This allows same SKU for inactive products, but active ones must be unique.
+
+this is the color for text
+#0b3c40     rgba(11,60,64,255)
+
+this is color for backgrounds
+#b59c35   rgba(181,156,53,255)
+
+
+bg-[#b59c35] text-[#0b3c40]

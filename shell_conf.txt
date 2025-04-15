@@ -39,3 +39,35 @@ SHELL_PLUS_POST_IMPORTS = [
 
 If you want to pass custom arguments to your shell, you can do so with:
 SHELL_PLUS_ARGUMENTS = ['--simple-prompt']  # Example argument for IPython
+
+
+Migrate from postgres to mysql database:
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',  # Use MySQL as the database engine
+#         'NAME': 'pilsoftdb',         # Replace with your MySQL database name
+#         'USER': 'pilsoftuser',            # Replace with your MySQL username
+#         'PASSWORD': 'pilsoft@2025',    # Replace with your MySQL password
+#         'HOST': 'localhost',                  # Set to 'localhost' for local development
+#         'PORT': '3306',                       # Default MySQL port
+#         'OPTIONS': {
+#             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",  # Optional: Enforce strict SQL mode
+#         },
+#     }
+# }
+
+python manage.py dumpdata > data.json
+python manage.py loaddata data.json
+
+
+>>> Entry.objects.values("pub_date__year").annotate(
+...     top_rating=Subquery(
+...         Entry.objects.filter(
+...             pub_date__year=OuterRef("pub_date__year"),
+...         )
+...         .order_by("-rating")
+...         .values("rating")[:1]
+...     ),
+...     total_comments=Sum("number_of_comments"),
+... )

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{question.question_text}} Details</title>
+</head>
+<body>
+    {% comment %} <center><h1>{{question.question_text}}</h1></center>
+    
+    {% if question.choice_set.all %}
+        <center><ul>
+        {% for choice in question.choice_set.all %}
+        <center><li>{{choice.choice_text}}</li></center>
+        {% endfor %}
+        </ul></center>
+    {% else %}
+        <center><p>No choices are available.</p></center>
+        
+    {% endif %} {% endcomment %}
+    <center><form action="{% url 'vote' question.id %}" method="post">
+        {% csrf_token %}
+        <fieldset>
+            <center><legend><h1>{{ question.question_text }}</h1></legend></center>
+            {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+            {% for choice in question.choice_set.all %}
+                <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
+                <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br>
+            {% endfor %}
+        </fieldset>
+        <input type="submit" value="Vote">
+        </form><center>
+</body>
+</html>
