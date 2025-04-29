@@ -352,11 +352,30 @@ Ensures age is at least 18.
         ]
 This allows same SKU for inactive products, but active ones must be unique.
 
-this is the color for text
-#0b3c40     rgba(11,60,64,255)
+Copying model instances¶
+Although there is no built-in method for copying model instances, it is possible to easily create new instance with all fields’ values copied. In the simplest case, you can set pk to None and _state.adding to True. Using our blog example:
 
-this is color for backgrounds
-#b59c35   rgba(181,156,53,255)
+blog = Blog(name="My blog", tagline="Blogging is easy")
+blog.save()  # blog.pk == 1
+
+blog.pk = None
+blog._state.adding = True
+blog.save()  # blog.pk == 2
+
+Entry.objects.update(number_of_pingbacks=F("number_of_pingbacks") + 1)
+
+>>> Author.objects.filter(name__unaccent__icontains="Helen")
+[<Author: Helen Mirren>, <Author: Helena Bonham Carter>, <Author: Hélène Joy>]
+
+Transactions
+multiple databases
+managers
+Tablespaces
+
+social login:
+https://www.hacksoft.io/blog/adding-google-login-to-your-existing-django-and-django-rest-framework-applications?utm_source=youtube&utm_medium=video&utm_campaign=Django-Campaign
 
 
-bg-[#b59c35] text-[#0b3c40]
+https://medium.com/@michal.drozdze/django-rest-framework-jwt-authentication-social-login-login-with-google-8911332f1008
+https://medium.com/@manjongmanka/password-resets-with-django-rest-framework-7122ffeadb6a
+https://www.nilebits.com/blog/2024/10/how-to-build-secure-django-apps/
